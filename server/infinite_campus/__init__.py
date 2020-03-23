@@ -1,13 +1,21 @@
 # Caden Kriese - 03-17-2020
+"""
+Infinite Campus module of Student Solutions backend API.
+"""
+
 from flask import Blueprint
 from flask_restful import Api
 
-from server.infinite_campus.classbook_api import ClassbooksAPI
+from server.infinite_campus.courses import CoursesAPI
 
-infinite_campus = Blueprint('infinite_campus', __name__, url_prefix='/ic')
-api = Api(infinite_campus)
+INFINITE_CAMPUS = Blueprint('infinite_campus', __name__, url_prefix='/ic/v1')
+API = Api(INFINITE_CAMPUS)
 
 
 def create_routes(app):
-    app.register_blueprint(infinite_campus)
-    api.add_resource(ClassbooksAPI, '/classbooks')
+    """
+    Defines the routes for the Infinite Campus module of the API.
+    :param app: The flask app these routes will be added to.
+    """
+    app.register_blueprint(INFINITE_CAMPUS)
+    API.add_resource(CoursesAPI, '/courses')

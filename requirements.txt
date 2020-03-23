@@ -1,6 +1,5 @@
 flask>=1.1.1
 dynaconf
-jsonobject
+requests
 flask-restful
 flask-jwt-extended
-firebase_admin
