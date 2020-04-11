@@ -1,5 +1,5 @@
-flask>=1.1.1
+flask>=1.1.2
 dynaconf
 requests
-flask-restful
+flask-restplus
 flask-jwt-extended
