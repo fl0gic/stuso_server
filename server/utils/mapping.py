@@ -5,7 +5,17 @@ Utilities for applying mappings to dictionaries.
 
 
 class BaseMapping(object):
+    """
+    Core mapping class.
+    """
     def __init__(self, old_name=None, new_name=None, get_lambda=None, format_lambda=None):
+        """
+        Init method.
+        :param old_name: The old name of the field.
+        :param new_name: The new name of the field.
+        :param get_lambda: A lambda function to retrieve the value from a dictionary.
+        :param format_lambda: A lambda function to properly format the value.
+        """
         self.get_lambda = get_lambda
         self.format_lambda = format_lambda
         self.new_name = new_name
@@ -13,13 +23,29 @@ class BaseMapping(object):
 
 
 class NestedMapping(BaseMapping):
+    """
+    Nested mapping class.
+    """
     def __init__(self, mappings=None, **kwargs):
+        """
+        Init method.
+        :param mappings: The mappings of the structure of the element.
+        :param kwargs: Keyword args inherited from BaseMapping.
+        """
         self.mapping = mappings
         super(NestedMapping, self).__init__(**kwargs)
 
 
 class NestedListMapping(BaseMapping):
+    """
+    Nested list mapping class.
+    """
     def __init__(self, mappings=None, **kwargs):
+        """
+        Init method.
+        :param mappings: The mappings of the structure of the elements in the list.
+        :param kwargs: Keyword args inherited from BaseMapping.
+        """
         self.mapping = mappings
         super(NestedListMapping, self).__init__(**kwargs)
 

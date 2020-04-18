@@ -23,6 +23,13 @@ req_args.add_argument('term', type=int, help='Term must be an int!', location='a
 
 
 def get_grading_task_field(grading_tasks, field, alternate_field):
+    """
+    Get a field from the primary grading task.
+    :param grading_tasks: The list of grading tasks.
+    :param field: The name of the field to get.
+    :param alternate_field: An alternate name for the field if the first one does not exist.
+    :return: The value of the field.
+    """
     if grading_tasks is None:
         return None
     tasks = [task for task in grading_tasks if task['hasDetail']]
@@ -35,9 +42,14 @@ def get_grading_task_field(grading_tasks, field, alternate_field):
         return tasks.get(alternate_field)
 
 
-def generate_flags(mp):
+def generate_flags(dct):
+    """
+    Generates flag list from a map.
+    :param dct: The dictionary to retrieve the flags from.
+    :return: A list of assignment flags.
+    """
     flags = ['late', 'missing', 'cheated', 'dropped', 'incomplete']
-    flags = [f for f in flags if f not in mp or mp[f]]
+    flags = [f for f in flags if f not in dct or dct[f]]
     return flags
 
 
@@ -92,7 +104,6 @@ class CourseList(Resource):
     """
     For managing an overall list of the users courses.
     """
-
     @ns.marshal_list_with(course, skip_none=True)
     def get(self):
         """
@@ -126,6 +137,9 @@ class CourseList(Resource):
 @ns.route('/courses/<int:course_id>')
 @ns.param('course_id', 'The course identifier.')
 class Course(Resource):
+    """
+    For getting detailed information about a specific course.
+    """
     @ns.marshal_with(course, skip_none=True)
     def get(self, course_id):
         """
