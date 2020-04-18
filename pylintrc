@@ -86,7 +86,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 output-format=text
 
 # Tells whether to display a full report or only the messages.
-reports=yes
+reports=no
 
 # Activate the evaluation score.
 score=yes
@@ -319,7 +319,7 @@ class-naming-style=PascalCase
 #class-rgx=
 
 # Naming style matching correct constant names.
-const-naming-style=UPPER_CASE
+const-naming-style=snake_case
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
