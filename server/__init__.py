@@ -6,7 +6,7 @@ Backend API for Student Solutions
 from dynaconf import FlaskDynaconf
 from flask import Flask
 
-from server.v1 import v1
+from server.v1 import v1, api
 
 
 def create_app():

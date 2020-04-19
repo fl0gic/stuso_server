@@ -10,7 +10,7 @@ from flask_restx import Namespace, Resource, reqparse, abort
 from .models import *
 from ..utils.mapping import *
 
-ns = Namespace('infinitecampus', path='/ic',
+ns = Namespace('Infinite Campus', path='/ic',
                description='API requests for grabbing data specifically from Infinite Campus.')
 
 req_args = reqparse.RequestParser()
@@ -20,6 +20,20 @@ req_args.add_argument('app_url', type=str, required=True, help='The app base URL
 req_args.add_argument('app_name', type=str, required=True, help='The app name cannot be blank!', location='cookies')
 # Other Args
 req_args.add_argument('term', type=int, help='Term must be an int!', location='args')
+
+
+def get_or_alt(dct, name, alt_name):
+    """
+    Retrieves a value from a dict otherwise retrieves a secondary value.
+    :param dct: The dictionary to retrieve the value from.
+    :param name: The first key of the dict.
+    :param alt_name: The alternate key if the first one is not in the dictionary.
+    :return:
+    """
+    if name in dct:
+        return dct.get(name)
+    else:
+        return dct.get(alt_name)
 
 
 def get_grading_task_field(grading_tasks, field, alternate_field):
@@ -36,10 +50,7 @@ def get_grading_task_field(grading_tasks, field, alternate_field):
     if 0 == len(tasks):
         return None
     tasks = tasks[0]
-    if field in tasks:
-        return tasks.get(field)
-    else:
-        return tasks.get(alternate_field)
+    return get_or_alt(tasks, field, alternate_field)
 
 
 def generate_flags(dct):
@@ -79,9 +90,12 @@ grade_category_mapping = [
 ]
 
 grade_section_mapping = [
-    BaseMapping(old_name='taskName', new_name='name'),
-    BaseMapping(old_name='progressScore', new_name='grade_letter'),
-    BaseMapping(old_name='progressPercent', new_name='grade_percent'),
+    BaseMapping(get_lambda=lambda mp: mp['task'].get('taskName') if 'task' in mp else None,
+                new_name='name'),
+    BaseMapping(get_lambda=lambda mp: get_or_alt(mp['task'], 'progressPercent', 'percent') if 'task' in mp else None,
+                new_name='grade_percent'),
+    BaseMapping(get_lambda=lambda mp: get_or_alt(mp['task'], 'progressScore', 'score') if 'task' in mp else None,
+                new_name='grade_letter'),
     BaseMapping(old_name='categories', new_name='grade_sections'),
     NestedListMapping(mappings=grade_category_mapping, old_name='categories', new_name='grade_categories'),
 ]
@@ -100,15 +114,20 @@ course_mapping = [
 
 
 @ns.route('/courses')
+@ns.param('JSESSIONID', 'The users active Infinite Campus session identifier.', _in='cookie')
+@ns.param('app_url', 'The Infinite Campus app base url.', _in='cookie')
+@ns.param('app_name', 'The Infinite Campus app name', _in='cookie')
 class CourseList(Resource):
     """
     For managing an overall list of the users courses.
     """
 
     @ns.marshal_list_with(course, skip_none=True)
+    @ns.response(401, 'Invalid JSESSIONID, the server could not authenticate.')
     def get(self):
         """
-        A list of the users classes with basic information.
+        Course List
+        ---
         :return: A list of the users classes with basic information.
         """
         args = req_args.parse_args()
@@ -136,16 +155,21 @@ class CourseList(Resource):
 
 
 @ns.route('/courses/<int:course_id>')
-@ns.param('course_id', 'The course identifier.')
+@ns.param('JSESSIONID', 'The users active Infinite Campus session identifier.', _in='cookie')
+@ns.param('app_url', 'The Infinite Campus app base url.', _in='cookie')
+@ns.param('app_name', 'The Infinite Campus app name', _in='cookie')
+@ns.param('course_id', 'The course identifier.', _in='query')
 class Course(Resource):
     """
     For getting detailed information about a specific course.
     """
 
     @ns.marshal_with(course, skip_none=True)
+    @ns.response(401, 'Invalid JSESSIONID, the server could not authenticate.')
     def get(self, course_id):
         """
-        Information for a specific course.
+        Course Details
+        ---
         :return: Detailed information for the specified course.
         """
         args = req_args.parse_args()
@@ -161,4 +185,7 @@ class Course(Resource):
         if response.status_code != 200:
             abort(response.status_code, 'Error occurred while accessing Infinite Campus.')
 
-        return apply_mapping(response.json(), course_mapping), 200
+        mapped_response = apply_mapping(response.json(), course_mapping)
+        mapped_response['name'] = response.json()['details'][0]['task']['courseName']
+
+        return mapped_response, 200
