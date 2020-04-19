@@ -1,5 +1,7 @@
 # Caden Kriese - 03-17-2020
-
+"""
+Setup tools.
+"""
 from setuptools import setup
 
 setup(

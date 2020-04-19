@@ -104,6 +104,7 @@ class CourseList(Resource):
     """
     For managing an overall list of the users courses.
     """
+
     @ns.marshal_list_with(course, skip_none=True)
     def get(self):
         """
@@ -140,6 +141,7 @@ class Course(Resource):
     """
     For getting detailed information about a specific course.
     """
+
     @ns.marshal_with(course, skip_none=True)
     def get(self, course_id):
         """
