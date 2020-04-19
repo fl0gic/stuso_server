@@ -1,5 +1,10 @@
 [default]
 DEBUG = false
+OPENAPI_VERSION = '3.0.2'
+OPENAPI_JSON_PATH = "api-spec.json"
+OPENAPI_URL_PREFIX = "/"
+OPENAPI_REDOC_PATH = '/docs'
+OPENAPI_REDOC_URL = 'https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js'
 
 [development]
 DEBUG = true
