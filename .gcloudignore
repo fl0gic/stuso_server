@@ -587,4 +587,7 @@ fabric.properties
 [Ll]ocal
 [Ss]cripts
 pip-selfcheck.json
+pylintrc
+readme.md
+Dockerfile
 
